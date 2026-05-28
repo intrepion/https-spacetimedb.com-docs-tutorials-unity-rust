@@ -45,3 +45,14 @@ pub struct Food {
     #[primary_key]
     pub entity_id: i32,
 }
+
+#[spacetimedb::table(accessor = player, public)]
+#[derive(Debug, Clone)]
+pub struct Player {
+    #[primary_key]
+    identity: Identity,
+    #[unique]
+    #[auto_inc]
+    player_id: i32,
+    name: String,
+}
