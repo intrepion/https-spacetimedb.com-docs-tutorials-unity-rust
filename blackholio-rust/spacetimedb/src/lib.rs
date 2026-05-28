@@ -1,34 +1,11 @@
-use spacetimedb::{ReducerContext, Table};
+use std::time::Duration;
+use spacetimedb::{rand::Rng, Identity, SpacetimeType, ReducerContext, ScheduleAt, Table, Timestamp};
 
-#[spacetimedb::table(accessor = person, public)]
-pub struct Person {
-    name: String,
-}
-
-#[spacetimedb::reducer(init)]
-pub fn init(_ctx: &ReducerContext) {
-    // Called when the module is initially published
-}
-
-#[spacetimedb::reducer(client_connected)]
-pub fn identity_connected(_ctx: &ReducerContext) {
-    // Called everytime a new client connects
-}
-
-#[spacetimedb::reducer(client_disconnected)]
-pub fn identity_disconnected(_ctx: &ReducerContext) {
-    // Called everytime a client disconnects
-}
-
-#[spacetimedb::reducer]
-pub fn add(ctx: &ReducerContext, name: String) {
-    ctx.db.person().insert(Person { name });
-}
-
-#[spacetimedb::reducer]
-pub fn say_hello(ctx: &ReducerContext) {
-    for person in ctx.db.person().iter() {
-        log::info!("Hello, {}!", person.name);
-    }
-    log::info!("Hello, World!");
+// We're using this table as a singleton, so in this table
+// there only be one element where the `id` is 0.
+#[spacetimedb::table(accessor = config, public)]
+pub struct Config {
+    #[primary_key]
+    pub id: i32,
+    pub world_size: i64,
 }
