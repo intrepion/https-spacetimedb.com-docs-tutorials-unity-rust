@@ -56,3 +56,9 @@ pub struct Player {
     player_id: i32,
     name: String,
 }
+
+#[spacetimedb::reducer]
+pub fn debug(ctx: &ReducerContext) -> Result<(), String> {
+    log::debug!("This reducer was called by {}.", ctx.sender());
+    Ok(())
+}
