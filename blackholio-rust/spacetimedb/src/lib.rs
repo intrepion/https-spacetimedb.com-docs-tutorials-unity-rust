@@ -55,6 +55,7 @@ pub struct Food {
 }
 
 #[spacetimedb::table(accessor = player, public)]
+#[spacetimedb::table(accessor = logged_out_player)]
 #[derive(Debug, Clone)]
 pub struct Player {
     #[primary_key]
@@ -84,7 +85,34 @@ pub fn init(ctx: &ReducerContext) -> Result<(), String> {
 
 #[spacetimedb::reducer(client_connected)]
 pub fn connect(ctx: &ReducerContext) -> Result<(), String> {
-    log::debug!("{} just connected.", ctx.sender());
+    if let Some(player) = ctx.db.logged_out_player().identity().find(&ctx.sender()) {
+        ctx.db.player().insert(player.clone());
+        ctx.db
+            .logged_out_player()
+            .identity()
+            .delete(&player.identity);
+    } else {
+        ctx.db.player().try_insert(Player {
+            identity: ctx.sender(),
+            player_id: 0,
+            name: String::new(),
+        })?;
+    }
+    Ok(())
+}
+
+#[spacetimedb::reducer(client_disconnected)]
+pub fn disconnect(ctx: &ReducerContext) -> Result<(), String> {
+    let player = ctx
+        .db
+        .player()
+        .identity()
+        .find(&ctx.sender())
+        .ok_or("Player not found")?;
+    let player_id = player.player_id;
+    ctx.db.logged_out_player().insert(player);
+    ctx.db.player().identity().delete(&ctx.sender());
+
     Ok(())
 }
 
