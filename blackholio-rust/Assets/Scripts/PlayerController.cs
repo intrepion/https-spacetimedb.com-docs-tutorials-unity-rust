@@ -116,6 +116,28 @@ public class PlayerController : MonoBehaviour
     public void SetTestInput(Vector2 input) => testInput = input;
     public void EnableTestInput() => testInputEnabled = true;
 
+    private static Vector2 CenterOfScreen()
+    {
+        return new Vector2(Screen.width, Screen.height) / 2;
+    }
+
+    private static Vector2 CurrentPointerPosition()
+    {
+        var touchscreen = Touchscreen.current;
+        if (touchscreen != null && touchscreen.primaryTouch.press.isPressed)
+        {
+            return touchscreen.primaryTouch.position.ReadValue();
+        }
+
+        var mouse = Mouse.current;
+        if (mouse != null)
+        {
+            return mouse.position.ReadValue();
+        }
+
+        return CenterOfScreen();
+    }
+
     public void Update()
     {
         if (!IsLocalPlayer || NumberOfOwnedCircles == 0)
@@ -123,7 +145,7 @@ public class PlayerController : MonoBehaviour
             return;
         }
 
-        var mousePosition = Mouse.current?.position.ReadValue() ?? Vector2.zero;
+        var pointerPosition = CurrentPointerPosition();
 
         if (Keyboard.current?.qKey.wasPressedThisFrame == true)
         {
@@ -133,7 +155,7 @@ public class PlayerController : MonoBehaviour
             }
             else
             {
-                LockInputPosition = mousePosition;
+                LockInputPosition = pointerPosition;
             }
         }
 
@@ -142,7 +164,7 @@ public class PlayerController : MonoBehaviour
         {
             LastMovementSendTimestamp = Time.time;
 
-            mousePosition = LockInputPosition ?? mousePosition;
+            pointerPosition = LockInputPosition ?? pointerPosition;
             var screenSize = new Vector2
             {
                 x = Screen.width,
@@ -150,7 +172,7 @@ public class PlayerController : MonoBehaviour
             };
             var centerOfScreen = screenSize / 2;
 
-            var direction = (mousePosition - centerOfScreen) / (screenSize.y / 3);
+            var direction = (pointerPosition - centerOfScreen) / (screenSize.y / 3);
             if (testInputEnabled) { direction = testInput; }
             GameManager.Conn.Reducers.UpdatePlayerInput(direction);
         }
