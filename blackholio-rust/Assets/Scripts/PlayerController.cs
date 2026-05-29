@@ -13,20 +13,35 @@ public class PlayerController : MonoBehaviour
     public static PlayerController Local { get; private set; }
 
     private int PlayerId;
+    private string username;
     private float LastMovementSendTimestamp;
     private Vector2? LockInputPosition;
     private List<CircleController> OwnedCircles = new List<CircleController>();
 
-    public string Username => GameManager.Conn.Db.Player.PlayerId.Find(PlayerId).Name;
+    public string Username => username;
     public int NumberOfOwnedCircles => OwnedCircles.Count;
     public bool IsLocalPlayer => this == Local;
 
     public void Initialize(Player player)
     {
         PlayerId = player.PlayerId;
+        username = player.Name;
         if (player.Identity == GameManager.LocalIdentity)
         {
             Local = this;
+        }
+    }
+
+    public void OnPlayerUpdated(Player player)
+    {
+        username = player.Name;
+
+        foreach (var circle in OwnedCircles)
+        {
+            if (circle != null)
+            {
+                circle.SetName(username);
+            }
         }
     }
 

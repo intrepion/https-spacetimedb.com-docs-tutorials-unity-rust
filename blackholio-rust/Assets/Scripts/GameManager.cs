@@ -65,6 +65,7 @@ public class GameManager : MonoBehaviour
         conn.Db.Entity.OnDelete += EntityOnDelete;
         conn.Db.Food.OnInsert += FoodOnInsert;
         conn.Db.Player.OnInsert += PlayerOnInsert;
+        conn.Db.Player.OnUpdate += PlayerOnUpdate;
         conn.Db.Player.OnDelete += PlayerOnDelete;
 
         OnConnected?.Invoke();
@@ -99,8 +100,8 @@ public class GameManager : MonoBehaviour
         var worldSize = Conn.Db.Config.Id.Find(0).WorldSize;
         SetupArena(worldSize);
 
-        // Call enter game with the player name 3Blave
-        ctx.Reducers.EnterGame("3Blave");
+        // Call enter game with the player name intrepion
+        ctx.Reducers.EnterGame("intrepion");
     }
 
     public static bool IsConnected()
@@ -171,6 +172,11 @@ public class GameManager : MonoBehaviour
     private static void PlayerOnInsert(EventContext context, Player insertedPlayer)
     {
         GetOrCreatePlayer(insertedPlayer.PlayerId);
+    }
+
+    private static void PlayerOnUpdate(EventContext context, Player oldPlayer, Player newPlayer)
+    {
+        GetOrCreatePlayer(newPlayer.PlayerId).OnPlayerUpdated(newPlayer);
     }
 
     private static void PlayerOnDelete(EventContext context, Player deletedvalue)

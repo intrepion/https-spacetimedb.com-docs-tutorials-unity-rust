@@ -35,7 +35,12 @@ public class CircleController : EntityController
         SetColor(ColorPalette[circle.PlayerId % ColorPalette.Length]);
 
         this.Owner = owner;
-        GetComponentInChildren<TMPro.TextMeshProUGUI>().text = owner.Username;
+        SetName(owner.Username);
+    }
+
+    public void SetName(string name)
+    {
+        GetComponentInChildren<TMPro.TextMeshProUGUI>().text = name;
     }
 
     public override void OnDelete(EventContext context)
