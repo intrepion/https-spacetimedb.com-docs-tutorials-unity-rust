@@ -3,6 +3,7 @@ using System.Linq;
 using SpacetimeDB;
 using SpacetimeDB.Types;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class PlayerController : MonoBehaviour
 {
@@ -107,7 +108,9 @@ public class PlayerController : MonoBehaviour
             return;
         }
 
-        if (Input.GetKeyDown(KeyCode.Q))
+        var mousePosition = Mouse.current?.position.ReadValue() ?? Vector2.zero;
+
+        if (Keyboard.current?.qKey.wasPressedThisFrame == true)
         {
             if (LockInputPosition.HasValue)
             {
@@ -115,7 +118,7 @@ public class PlayerController : MonoBehaviour
             }
             else
             {
-                LockInputPosition = (Vector2)Input.mousePosition;
+                LockInputPosition = mousePosition;
             }
         }
 
@@ -124,7 +127,7 @@ public class PlayerController : MonoBehaviour
         {
             LastMovementSendTimestamp = Time.time;
 
-            var mousePosition = LockInputPosition ?? (Vector2)Input.mousePosition;
+            mousePosition = LockInputPosition ?? mousePosition;
             var screenSize = new Vector2
             {
                 x = Screen.width,
