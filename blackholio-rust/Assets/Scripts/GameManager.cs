@@ -94,6 +94,9 @@ public class GameManager : MonoBehaviour
         // Get the world size from the config table and set up the arena
         var worldSize = Conn.Db.Config.Id.Find(0).WorldSize;
         SetupArena(worldSize);
+
+        // Call enter game with the player name 3Blave
+        ctx.Reducers.EnterGame("3Blave");
     }
 
     public static bool IsConnected()
