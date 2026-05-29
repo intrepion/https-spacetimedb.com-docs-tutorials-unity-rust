@@ -79,6 +79,11 @@ public class GameManager : MonoBehaviour
     {
         Debug.Log("Subscription applied!");
         OnSubscriptionApplied?.Invoke();
+
+        // Once we have the initial subscription sync'd to the client cache
+        // Get the world size from the config table and set up the arena
+        var worldSize = Conn.Db.Config.Id.Find(0).WorldSize;
+        SetupArena(worldSize);
     }
 
     public static bool IsConnected()
@@ -90,5 +95,26 @@ public class GameManager : MonoBehaviour
     {
         Conn.Disconnect();
         Conn = null;
+    }
+
+    private void SetupArena(float worldSize)
+    {
+        CreateBorderCube(new Vector2(worldSize / 2.0f, worldSize + borderThickness / 2),
+            new Vector2(worldSize + borderThickness * 2.0f, borderThickness)); //North
+        CreateBorderCube(new Vector2(worldSize / 2.0f, -borderThickness / 2),
+            new Vector2(worldSize + borderThickness * 2.0f, borderThickness)); //South
+        CreateBorderCube(new Vector2(worldSize + borderThickness / 2, worldSize / 2.0f),
+            new Vector2(borderThickness, worldSize + borderThickness * 2.0f)); //East
+        CreateBorderCube(new Vector2(-borderThickness / 2, worldSize / 2.0f),
+            new Vector2(borderThickness, worldSize + borderThickness * 2.0f)); //West
+    }
+
+    private void CreateBorderCube(Vector2 position, Vector2 scale)
+    {
+        var cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        cube.name = "Border";
+        cube.transform.localScale = new Vector3(scale.x, scale.y, 1);
+        cube.transform.position = new Vector3(position.x, position.y, 1);
+        cube.GetComponent<MeshRenderer>().material = borderMaterial;
     }
 }
