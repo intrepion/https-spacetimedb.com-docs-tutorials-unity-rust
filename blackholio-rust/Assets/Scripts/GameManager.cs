@@ -20,6 +20,9 @@ public class GameManager : MonoBehaviour
     public static Identity LocalIdentity { get; private set; }
     public static DbConnection Conn { get; private set; }
 
+    public static Dictionary<int, EntityController> Entities = new Dictionary<int, EntityController>();
+    public static Dictionary<int, PlayerController> Players = new Dictionary<int, PlayerController>();
+
     private void Start()
     {
         Instance = this;
@@ -47,11 +50,18 @@ public class GameManager : MonoBehaviour
     }
 
     // Called when we connect to SpacetimeDB and receive our client identity
-    void HandleConnect(DbConnection _conn, Identity identity, string token)
+    void HandleConnect(DbConnection conn, Identity identity, string token)
     {
         Debug.Log("Connected.");
         AuthToken.SaveToken(token);
         LocalIdentity = identity;
+
+        conn.Db.Circle.OnInsert += CircleOnInsert;
+        conn.Db.Entity.OnUpdate += EntityOnUpdate;
+        conn.Db.Entity.OnDelete += EntityOnDelete;
+        conn.Db.Food.OnInsert += FoodOnInsert;
+        conn.Db.Player.OnInsert += PlayerOnInsert;
+        conn.Db.Player.OnDelete += PlayerOnDelete;
 
         OnConnected?.Invoke();
 
@@ -116,5 +126,60 @@ public class GameManager : MonoBehaviour
         cube.transform.localScale = new Vector3(scale.x, scale.y, 1);
         cube.transform.position = new Vector3(position.x, position.y, 1);
         cube.GetComponent<MeshRenderer>().material = borderMaterial;
+    }
+
+    private static void CircleOnInsert(EventContext context, Circle insertedValue)
+    {
+        var player = GetOrCreatePlayer(insertedValue.PlayerId);
+        var entityController = PrefabManager.SpawnCircle(insertedValue, player);
+        Entities.Add(insertedValue.EntityId, entityController);
+    }
+
+    private static void EntityOnUpdate(EventContext context, Entity oldEntity, Entity newEntity)
+    {
+        if (!Entities.TryGetValue(newEntity.EntityId, out var entityController))
+        {
+            return;
+        }
+        entityController.OnEntityUpdated(newEntity);
+    }
+
+    private static void EntityOnDelete(EventContext context, Entity oldEntity)
+    {
+        if (Entities.Remove(oldEntity.EntityId, out var entityController))
+        {
+            entityController.OnDelete(context);
+        }
+    }
+
+    private static void FoodOnInsert(EventContext context, Food insertedValue)
+    {
+        var entityController = PrefabManager.SpawnFood(insertedValue);
+        Entities.Add(insertedValue.EntityId, entityController);
+    }
+
+    private static void PlayerOnInsert(EventContext context, Player insertedPlayer)
+    {
+        GetOrCreatePlayer(insertedPlayer.PlayerId);
+    }
+
+    private static void PlayerOnDelete(EventContext context, Player deletedvalue)
+    {
+        if (Players.Remove(deletedvalue.PlayerId, out var playerController))
+        {
+            GameObject.Destroy(playerController.gameObject);
+        }
+    }
+
+    private static PlayerController GetOrCreatePlayer(int playerId)
+    {
+        if (!Players.TryGetValue(playerId, out var playerController))
+        {
+            var player = Conn.Db.Player.PlayerId.Find(playerId);
+            playerController = PrefabManager.SpawnPlayer(player);
+            Players.Add(playerId, playerController);
+        }
+
+        return playerController;
     }
 }
