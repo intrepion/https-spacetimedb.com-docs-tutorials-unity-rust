@@ -124,9 +124,11 @@ public class PlayerController : MonoBehaviour
     private static Vector2 CurrentPointerPosition()
     {
         var touchscreen = Touchscreen.current;
-        if (touchscreen != null && touchscreen.primaryTouch.press.isPressed)
+        if (touchscreen != null)
         {
-            return touchscreen.primaryTouch.position.ReadValue();
+            return touchscreen.primaryTouch.press.isPressed
+                ? touchscreen.primaryTouch.position.ReadValue()
+                : CenterOfScreen();
         }
 
         var mouse = Mouse.current;
