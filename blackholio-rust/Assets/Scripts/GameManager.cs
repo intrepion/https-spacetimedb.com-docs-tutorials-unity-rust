@@ -101,7 +101,7 @@ public class GameManager : MonoBehaviour
         SetupArena(worldSize);
 
         // Call enter game with the player name intrepion
-        ctx.Reducers.EnterGame("intrepion");
+        ctx.Reducers.EnterGame("mini");
     }
 
     public static bool IsConnected()
