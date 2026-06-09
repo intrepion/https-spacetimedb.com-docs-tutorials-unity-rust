@@ -149,6 +149,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f623a726ccee44a24beed07feb86e819, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameManager
+  borderThickness: 2
+  borderMaterial: {fileID: 0}
 --- !u!4 &213550075
 Transform:
   m_ObjectHideFlags: 0
