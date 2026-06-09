@@ -117,6 +117,9 @@ public class GameManager : MonoBehaviour
             new Vector2(borderThickness, worldSize + borderThickness * 2.0f)); //East
         CreateBorderCube(new Vector2(-borderThickness / 2, worldSize / 2.0f),
             new Vector2(borderThickness, worldSize + borderThickness * 2.0f)); //West
+
+        // Set the world size for the camera controller
+        CameraController.WorldSize = worldSize;
     }
 
     private void CreateBorderCube(Vector2 position, Vector2 scale)
