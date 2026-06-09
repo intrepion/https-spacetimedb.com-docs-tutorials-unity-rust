@@ -626,6 +626,7 @@ namespace SpacetimeDB.Types
             return reducer switch
             {
                 Reducer.Debug args => Reducers.InvokeDebug(eventContext, args),
+                Reducer.EnterGame args => Reducers.InvokeEnterGame(eventContext, args),
                 _ => throw new ArgumentOutOfRangeException("Reducer", $"Unknown reducer {reducer}")
             };
         }
