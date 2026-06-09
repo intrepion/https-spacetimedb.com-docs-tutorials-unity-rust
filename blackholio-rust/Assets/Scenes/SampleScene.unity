@@ -130,6 +130,7 @@ GameObject:
   - component: {fileID: 213550075}
   - component: {fileID: 213550074}
   - component: {fileID: 213550076}
+  - component: {fileID: 213550077}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -178,6 +179,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e016ef92e52934343857fd26e55140c1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: com.clockworklabs.spacetimedbsdk::SpacetimeDB.SpacetimeDBNetworkManager
+--- !u!114 &213550077
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 213550073}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 782cb5a676f9a42bba6f77f9e2dfc485, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PrefabManager
+  CirclePrefab: {fileID: 6470089128807404535, guid: 276840cedf3fc475589021b4892afd09, type: 3}
+  FoodPrefab: {fileID: 5499627847266610430, guid: d422abb05382e4c51a64562bec677533, type: 3}
+  PlayerPrefab: {fileID: 604528174606328882, guid: 7ab81895f83d24d7d84f708b4e721026, type: 3}
 --- !u!1 &519420028
 GameObject:
   m_ObjectHideFlags: 0
